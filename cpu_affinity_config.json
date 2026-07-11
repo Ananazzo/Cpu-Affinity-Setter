@@ -1,0 +1,22 @@
+{
+  "firefox.exe": {
+    "group": "E"
+  },
+  "FanControl.exe": {
+    "group": "E"
+  },
+  "discord.exe": {
+    "group": "E",
+    "smart_unlock": true
+  },
+  "Spotify.exe": {
+    "group": "E",
+    "smart_unlock": true
+  },
+  "AutoHotkey64.exe": {
+    "group": "E"
+  },
+  "wallpaper64.exe": {
+    "group": "E"
+  }
+}
