@@ -1,5 +1,6 @@
 # Cpu-Affinity-Setter
-Sets what cores a program uses with a modern Intel CPU
+Sets what cores a program uses with a modern Intel/Hybrid CPU (can be used manually on any cpu with the legacy list)
+
 Works only with Hybrid ProcesSors that use Hyperthreading on P-cores and not on E-cores (Legacy list supported on all Processors)
 
 # Usage:
