@@ -3,8 +3,11 @@ Sets what cores a program uses with a modern Intel CPU
 
 # Usage:
    python cpu_affinity_service_groups.py install
+   
    python cpu_affinity_service_groups.py start
+   
    python cpu_affinity_service_groups.py stop
+   
    python cpu_affinity_service_groups.py remove
 
 # Requirements:
