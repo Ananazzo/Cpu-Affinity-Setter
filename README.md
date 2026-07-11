@@ -1,5 +1,6 @@
 # Cpu-Affinity-Setter
 Sets what cores a program uses with a modern Intel CPU
+Works only with Hybrid ProcesSors that use Hyperthreading on P-cores and not on E-cores (Legacy list supported on all Processors)
 
 # Usage:
    python cpu_affinity_service_groups.py install
