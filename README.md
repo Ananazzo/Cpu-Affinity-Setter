@@ -18,5 +18,6 @@ Works only with Hybrid ProcesSors that use Hyperthreading on P-cores and not on 
 # Notes:
  - Config file cpu_affinity_config.json in same folder.
  - Config uses "group": "P"|"E"|"ALL" (case-insensitive). Legacy list form [0,1] still accepted.
+ - P_NOHT → P-cores, one thread per physical core
  - Smart Unlock: expands to ALL logical CPUs when assigned group is saturated.
  - Service must be installed/started with Administrator privileges.
