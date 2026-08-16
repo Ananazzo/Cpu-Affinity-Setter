@@ -128,27 +128,34 @@ def build_groups():
     try:
         phys_map = get_physical_to_logical_map()
         p_list = []
+        p_noht_list = []
         e_list = []
         for logical_indices in phys_map:
             if len(logical_indices) > 1:
+                # P-core 
                 p_list.extend(logical_indices)
+                # P-core no Hyper-Threading
+                p_noht_list.append(logical_indices[0])
             else:
+                # E-core
                 e_list.extend(logical_indices)
         # dedupe & sort
         p_list = sorted(set(p_list))
+        p_noht_list = sorted(set(p_noht_list))
         e_list = sorted(set(e_list))
         all_list = sorted(set(p_list + e_list))
-        return p_list, e_list, all_list
+        return p_list, p_noht_list, e_list, all_list
     except Exception as e:
         log(f"Failed to build physical->logical map: {e}\n{traceback.format_exc()}")
         # fallback: treat first half as P and second half as E if possible
         logical_count = psutil.cpu_count(logical=True) or 1
         half = max(1, logical_count // 2)
         p_list = list(range(0, half))
+        p_noht_list = p_list[::2]
         e_list = list(range(half, logical_count))
         all_list = list(range(logical_count))
-        log(f"Fallback groups: P={p_list}, E={e_list}, ALL={all_list}")
-        return p_list, e_list, all_list
+        log(f"Fallback groups: P={p_list}, P_NOHT={p_noht_list}, E={e_list}, ALL={all_list}")
+        return p_list, p_noht_list, e_list, all_list
 
 # ---------- Config loader ----------
 def load_config() -> Dict[str, dict]:
@@ -296,6 +303,7 @@ class GroupAffinityService(win32serviceutil.ServiceFramework):
 
         # runtime
         self.p_group = []
+        self.p_noht_group = []
         self.e_group = []
         self.all_group = []
         self.config = {}
@@ -327,8 +335,8 @@ class GroupAffinityService(win32serviceutil.ServiceFramework):
         pythoncom.CoInitialize()
         try:
             # build groups
-            self.p_group, self.e_group, self.all_group = build_groups()
-            log(f"Detected groups: P={self.p_group}, E={self.e_group}, ALL={self.all_group}")
+            self.p_group, self.p_noht_group, self.e_group, self.all_group = build_groups()
+            log(f"Detected groups: P={self.p_group}, P_NOHT={self.p_noht_group}, E={self.e_group}, ALL={self.all_group}")
 
             # load config
             raw_cfg = load_config()
@@ -348,6 +356,8 @@ class GroupAffinityService(win32serviceutil.ServiceFramework):
                     g = grp.upper()
                     if g == "P":
                         logical = list(self.p_group)
+                    elif g == "P_NOHT":
+                        logical = list(self.p_noht_group)
                     elif g == "E":
                         logical = list(self.e_group)
                     elif g == "ALL":
@@ -414,6 +424,8 @@ class GroupAffinityService(win32serviceutil.ServiceFramework):
                                 g = grp.upper()
                                 if g == "P":
                                     logical = list(self.p_group)
+                                elif g == "P_NOHT":
+                                    logical = list(self.p_noht_group)
                                 elif g == "E":
                                     logical = list(self.e_group)
                                 elif g == "ALL":
